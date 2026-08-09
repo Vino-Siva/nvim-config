@@ -1,2 +1,4 @@
+
 # nvim-config
-Customized config with Kickstart.nvim as base.
+
+Customized nvim config with Kickstart.nvim as base.
