@@ -58,10 +58,14 @@ do
 
 	---@type table<string, vim.lsp.Config>
 	local servers = {
-		-- clangd = {},
-		-- gopls = {},
+		clangd = {},
+		gopls = {},
 		pyright = {},
-		-- rust_analyzer = {},
+		rust_analyzer = {},
+		bashls = {},
+		html = {},
+		cssls = {},
+		jsonls = {},
 		--
 		-- Some languages (like typescript) have entire language plugins that can be useful:
 		--    https://github.com/pmizio/typescript-tools.nvim
@@ -107,6 +111,8 @@ do
 				},
 			},
 		},
+		tailwindcss = {},
+		yamlls = {},
 	}
 
 	vim.pack.add({
@@ -127,6 +133,9 @@ do
 	local ensure_installed = vim.tbl_keys(servers or {})
 	vim.list_extend(ensure_installed, {
 		-- You can add other tools here that you want Mason to install
+		"prettierd",
+		"stylua",
+		"markdownlint-cli2",
 	})
 
 	require("mason-tool-installer").setup({ ensure_installed = ensure_installed })
