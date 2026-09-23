@@ -284,6 +284,21 @@ Plugins install into `~/.local/share/nvim-thevinsi`, so the other config is unto
   use `y` directly. If you would rather keep the old habit, `git revert <sha>` restores it.
 - Revert: `git revert <sha>`.
 
+### Step 16 — enable friendly-snippets
+- Finding: #15.
+- Files: `plugin/luasnip.lua`, `docs/cleanup-log.md`.
+- Change: `vim.pack.add({ gh("rafamadriz/friendly-snippets") })` and `require("luasnip.loaders.from_vscode").lazy_load()`
+  (previously both lines were commented out). New plugin: `rafamadriz/friendly-snippets`.
+- Why: `blink.cmp` is configured with `snippets = { preset = "luasnip" }` and `sources.default` includes `"snippets"`, and LuaSnip
+  was installed and set up, but no snippets were ever loaded, so the whole snippet path did nothing. friendly-snippets is
+  the standard collection; `lazy_load()` only loads snippets for filetypes you actually open.
+- Verify (sandbox, open a `typescript` buffer, count `require("luasnip").get_snippets(ft)`):
+  before `typescript=0 all=0`; after `typescript=30 all=9`. (`lua`/`python` stay 0 until a buffer of that type is opened.)
+  Snippets then appear in the blink.cmp menu with the `snippets` source; accept with `<c-y>` (blink "default" preset) and jump
+  with `<Tab>`/`<S-Tab>`. Not verified in a live UI.
+- Alternative not taken: dropping LuaSnip and using blink's built-in snippet engine (`snippets.preset = "default"`).
+- Revert: `git revert <sha>` (the cloned plugin stays in `~/.local/share/nvim*/site/pack/core/opt`; `:lua vim.pack.del({"friendly-snippets"})` removes it).
+
 ## Deliberately not changed
 
 _Filled in at the final step._
