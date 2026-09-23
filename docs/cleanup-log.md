@@ -118,6 +118,21 @@ Plugins install into `~/.local/share/nvim-thevinsi`, so the other config is unto
   before: `"  "` (buffers) and `"  x"` (source); after: only `"  "` (buffers). `maparg('<leader>X','n')` is non-empty.
 - Revert: `git revert <sha>`; muscle memory note: the old key was `<space><space>x`.
 
+### Step 5 — add `stylua.toml`
+- Finding: #5.
+- Files: `stylua.toml` (new), `docs/cleanup-log.md`.
+- Change: `indent_type = "Spaces"`, `indent_width = 2`, `column_width = 120` (same values as the LazyVim config's `stylua.toml`).
+- Why: with no config, stylua defaults to **tabs**, but `after/ftplugin/lua.lua` says 2 spaces. Every format-on-save on a
+  Lua file (`conform.nvim` → `stylua`) therefore rewrote indentation to tabs, which produced the whole-file diffs seen in the
+  baseline commits and left the repo with mixed tab / 2-space files. conform's stylua formatter finds this file by walking up
+  from the buffer, so it now formats consistently with the ftplugin.
+- Verify: `stylua --check .` now reports differences in 21 files (all are the indentation mismatch left over from before);
+  they are fixed mechanically in step 6. No runtime behaviour changes in this step.
+- Tooling note: the Mason copy at `~/.local/share/nvim/mason/packages/stylua/stylua` (v2.5.2) has lost its executable bit,
+  so the cleanup ran a copy of it from a scratch directory. If `:ConformInfo` shows stylua as not executable in the LazyVim
+  setup, run `chmod +x` on that file (or `:MasonInstall stylua` in this config's sandbox / normal setup).
+- Revert: `git revert <sha>`.
+
 ## Deliberately not changed
 
 _Filled in at the final step._
