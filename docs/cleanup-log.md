@@ -223,6 +223,26 @@ Plugins install into `~/.local/share/nvim-thevinsi`, so the other config is unto
   returns an icon, and `:Neotree show` opens a window without errors.
 - Revert: `git revert <sha>` (or open the config in a terminal without a Nerd Font → boxes/`?` glyphs are the symptom to look for).
 
+### Step 12 — move gitsigns and vim-be-good into `plugin/`
+- Finding: #11.
+- Files: `lua/thevinsi/plugins/gitsigns.lua` → `plugin/gitsigns.lua` (`git mv`, history kept),
+  `lua/thevinsi/plugins/vim-be-good.lua` → `plugin/vim-be-good.lua`, `lua/thevinsi/init.lua`, `docs/cleanup-log.md`.
+- Change:
+  - Both plugins now live in `plugin/` like every other plugin, which Neovim sources automatically after `init.lua`.
+    The `require("thevinsi.plugins.*")` lines in `lua/thevinsi/init.lua` and the empty `lua/thevinsi/plugins/` directory are gone.
+  - `gitsigns.lua`: removed the duplicated header line and the stale note ("already included in init.lua") which was
+    Kickstart text that no longer described this repo.
+  - `vim-be-good.lua`: dropped the commented-out `setup()` (it is a Vimscript plugin, there is nothing to set up) and added
+    a one-line description.
+- Why: one convention for plugins. `lua/thevinsi/` now only holds core modules (`options`, `remap`, `pack`).
+  `pack.lua` (the `PackChanged` build hook) is still required from `init.lua`, so it is registered before any
+  `vim.pack.add` in `plugin/*` runs.
+- Load-order note: `gitsigns` used to be set up during `init.lua`; it is now set up in `plugin/*` alphabetical order (after
+  `debug.lua`). It has no dependency on other plugins, so nothing observable changes.
+- Verify (sandbox, headless, open a file inside the git repo): `:Gitsigns` and `:VimBeGood` exist, the buffer-local
+  `<leader>hp` and `]c` mappings exist, and gitsigns is attached — same result before and after.
+- Revert: `git revert <sha>`.
+
 ## Deliberately not changed
 
 _Filled in at the final step._

@@ -1,5 +1,3 @@
 require("thevinsi.options")
 require("thevinsi.remap")
 require("thevinsi.pack")
-require("thevinsi.plugins.gitsigns")
-require("thevinsi.plugins.vim-be-good")
