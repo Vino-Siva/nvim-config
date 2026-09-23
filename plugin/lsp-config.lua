@@ -22,7 +22,7 @@ do
 
       map("grD", vim.lsp.buf.declaration, "[G]oto [D]eclaration")
 
-      map("grd", vim.lsp.buf.definition, "[G]oto [d]efinition")
+      -- NOTE: `grd` (definition), `grr`, `gri`, `grt`, `gO` and `gW` are mapped in plugin/telescope.lua (Telescope pickers).
 
       local client = vim.lsp.get_client_by_id(event.data.client_id)
       if client and client:supports_method("textDocument/documentHighlight", event.buf) then

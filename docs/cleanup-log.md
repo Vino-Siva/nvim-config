@@ -255,6 +255,19 @@ Plugins install into `~/.local/share/nvim-thevinsi`, so the other config is unto
   `require("which-key.config").options.spec` now lists c, s, t, h, gr.
 - Revert: `git revert <sha>`.
 
+### Step 14 — remove duplicate `grd` mapping
+- Finding: #13.
+- Files: `plugin/lsp-config.lua`, `docs/cleanup-log.md`.
+- Change: deleted `map("grd", vim.lsp.buf.definition, ...)` from the `LspAttach` handler and left a note pointing to
+  `plugin/telescope.lua`, where `grd` (and `grr`, `gri`, `grt`, `gO`, `gW`) are mapped to Telescope pickers.
+- Why: two `LspAttach` autocmds set the same buffer-local key. They run in plugin load order (`lsp-config.lua` before
+  `telescope.lua`), so the Telescope one always overwrote it and the `lsp-config.lua` one was dead code.
+- Verify (sandbox, open a Lua file so `lua_ls` attaches): `maparg('grd','n',false,true).desc` is `[G]oto [D]efinition`
+  (the Telescope mapping; the removed one was `LSP: [G]oto [d]efinition`) both before and after.
+- Side finding, no change needed: a second client `stylua --lsp` attaches to Lua buffers. That is the `stylua = {}` entry
+  in the `servers` table: stylua 2.x has an LSP mode and nvim-lspconfig ships a config for it.
+- Revert: `git revert <sha>`.
+
 ## Deliberately not changed
 
 _Filled in at the final step._
