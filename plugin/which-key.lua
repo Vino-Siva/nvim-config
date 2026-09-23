@@ -7,10 +7,7 @@ require("which-key").setup({
   -- Document existing key chains
   spec = {
     { "<leader>c", group = "[C]ode", mode = { "n", "x" } },
-    { "<leader>d", group = "[D]ocument" },
-    { "<leader>r", group = "[R]ename" },
     { "<leader>s", group = "[S]earch", mode = { "n", "v" } },
-    { "<leader>w", group = "[W]orkspace" },
     { "<leader>t", group = "[T]oggle" },
     { "<leader>h", group = "Git [H]unk", mode = { "n", "v" } }, -- Enable gitsigns recommended keymaps first
     { "gr", group = "LSP Actions", mode = { "n" } },

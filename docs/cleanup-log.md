@@ -243,6 +243,18 @@ Plugins install into `~/.local/share/nvim-thevinsi`, so the other config is unto
   `<leader>hp` and `]c` mappings exist, and gitsigns is attached — same result before and after.
 - Revert: `git revert <sha>`.
 
+### Step 13 — remove stale which-key groups
+- Finding: #12.
+- Files: `plugin/which-key.lua`, `docs/cleanup-log.md`.
+- Change: removed the `<leader>d` ("Document"), `<leader>r` ("Rename") and `<leader>w` ("Workspace") group labels.
+  Kept `<leader>c`, `<leader>s`, `<leader>t`, `<leader>h` and `gr`.
+- Why: they were Kickstart leftovers with nothing under them. `<leader>r` and `<leader>w` have no mappings anywhere, and
+  `<leader>d` is actually your own `"_d` (delete without yanking) mapping, which a "Document" group label misdescribed.
+  `<leader>t` and `<leader>h` look empty globally but are buffer-local (LSP inlay hints, gitsigns), so those groups stay.
+- Verify: `grep -rE '"<leader>[rwd]' plugin lua` only finds the two `<leader>d` delete maps in `remap.lua`;
+  `require("which-key.config").options.spec` now lists c, s, t, h, gr.
+- Revert: `git revert <sha>`.
+
 ## Deliberately not changed
 
 _Filled in at the final step._
