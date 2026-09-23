@@ -7,12 +7,14 @@ entry below, so `git revert <sha>` removes the code change and its log entry tog
 - Baseline: commits `62eddcd`, `1156bdd`, `1cf0e8e` (pre-existing work), `3683aa2` (this log's first version).
   These were committed on `main` before the branch was created.
 - Neovim: 0.12.5. Plugin manager: built-in `vim.pack`.
-- Stylua: `~/.local/share/nvim/mason/bin/stylua` (not on `PATH`). Style: 2 spaces, width 120.
+- Stylua: Mason's `stylua` (in the `nvim-vinsi` app's Mason directory, `~/.local/share/nvim-vinsi/mason/bin/stylua`), not on
+  `PATH`. During the cleanup a copy from Omarchy's default Mason directory was used (see step 5). Style: 2 spaces, width 120.
 
 ## Testing setup
 
-`~/.config/nvim` is a different config and the `main` checkout is in daily use, so the `cleanup` branch is exercised
-from its worktree through a separate app name:
+This repo is run as `NVIM_APPNAME=nvim-vinsi` (`~/.config/nvim-vinsi` is a symlink to the `main` checkout, which is in daily
+use). `~/.config/nvim` is Omarchy's stock LazyVim config and is not used. So the `cleanup` branch was exercised from its
+worktree through a separate, throwaway app name:
 
 ```sh
 git worktree add <dir> -b cleanup                        # already done; <dir> is a folder inside the main checkout
@@ -124,16 +126,17 @@ Plugins install into `~/.local/share/nvim-thevinsi`, so the other config is unto
 ### Step 5 — add `stylua.toml`
 - Finding: #5.
 - Files: `stylua.toml` (new), `docs/cleanup-log.md`.
-- Change: `indent_type = "Spaces"`, `indent_width = 2`, `column_width = 120` (same values as the LazyVim config's `stylua.toml`).
+- Change: `indent_type = "Spaces"`, `indent_width = 2`, `column_width = 120` (same values as the `stylua.toml` in Omarchy's stock `~/.config/nvim`).
 - Why: with no config, stylua defaults to **tabs**, but `after/ftplugin/lua.lua` says 2 spaces. Every format-on-save on a
   Lua file (`conform.nvim` → `stylua`) therefore rewrote indentation to tabs, which produced the whole-file diffs seen in the
   baseline commits and left the repo with mixed tab / 2-space files. conform's stylua formatter finds this file by walking up
   from the buffer, so it now formats consistently with the ftplugin.
 - Verify: `stylua --check .` now reports differences in 21 files (all are the indentation mismatch left over from before);
   they are fixed mechanically in step 6. No runtime behaviour changes in this step.
-- Tooling note: the Mason copy at `~/.local/share/nvim/mason/packages/stylua/stylua` (v2.5.2) has lost its executable bit,
-  so the cleanup ran a copy of it from a scratch directory. If `:ConformInfo` shows stylua as not executable in the LazyVim
-  setup, run `chmod +x` on that file (or `:MasonInstall stylua` in this config's sandbox / normal setup).
+- Tooling note: the Mason copy in Omarchy's default data directory (`~/.local/share/nvim/mason/packages/stylua/stylua`,
+  v2.5.2) has lost its executable bit, so the cleanup ran a copy of it from a scratch directory. That directory belongs to the
+  stock config, not to `nvim-vinsi`: the `stylua` in `~/.local/share/nvim-vinsi/mason/` is installed and executable (checked
+  after the merge), so nothing needs fixing for this config.
 - Revert: `git revert <sha>`.
 
 ### Step 6 — run stylua over the repo
@@ -417,5 +420,5 @@ Reviewed, judged not worth changing now (or a matter of taste). Revisit later if
 | `nvim-web-devicons` explicitly added in `neo-tree.lua` | Redundant now that mini's mock is used (step 11) but harmless. |
 | Format-on-save only for filetypes in `formatters_by_ft` (none for json/css/html/yaml/markdown) and `timeout_ms = 500` | A choice, not a bug; `<leader>f` formats any buffer. Cold `prettierd` start can exceed 500 ms once. |
 | `prettier` (the fallback after `prettierd`) is not in Mason `ensure_installed` | Not needed while `prettierd` is installed. |
-| Mason's `stylua` in `~/.local/share/nvim/mason/` (the LazyVim config's data dir) lost its executable bit | Outside this repo; `chmod +x` that file if the LazyVim setup's stylua reports "not executable". |
+| Mason's `stylua` in `~/.local/share/nvim/mason/` (Omarchy's stock config, not `nvim-vinsi`) lost its executable bit | Not used by this config; `nvim-vinsi`'s own Mason `stylua` is installed and executable. |
 | Mixed `vim.o` / `vim.opt` usage, literal `<space>x` vs `<leader>`, `kickstart-*` augroup names | Cosmetic. |
