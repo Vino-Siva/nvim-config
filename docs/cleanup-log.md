@@ -164,6 +164,24 @@ Plugins install into `~/.local/share/nvim-thevinsi`, so the other config is unto
   headless test run `:MasonToolsInstallSync` explicitly.
 - Revert: `git revert <sha>` (installed binaries stay in Mason's directory; remove with `:MasonUninstall black goimports sqruff`).
 
+### Step 8 — derive `format_on_save` from `formatters_by_ft`
+- Finding: #7.
+- Files: `plugin/conform.lua`, `docs/cleanup-log.md`.
+- Change:
+  - `formatters_by_ft` is now a local table, and `format_on_save` formats any filetype that appears in it
+    (previously a separate `enabled_filetypes` table had to be kept in sync by hand).
+  - `go = { "goimports", "gofmt" }` → `{ "goimports" }` (goimports already applies gofmt formatting).
+  - Added `javascriptreact` (`.jsx`) with the same prettierd → prettier chain as the other JS filetypes.
+  - The repeated prettier chain is one `prettier` local.
+- Why: one list to maintain, and it can no longer drift (e.g. adding a formatter but forgetting to enable format-on-save).
+- Behaviour notes: filetypes formatted on save are unchanged apart from the new `javascriptreact`. Filetypes without an
+  entry (markdown, json, css, html, yaml, …) still are not formatted on save; `<leader>f` still formats manually
+  (falling back to LSP formatting via `lsp_format = "fallback"`).
+- Verify (sandbox, headless `nvim file +write`, unformatted input files): `.py` (black), `.go` (goimports), `.ts`, `.jsx`,
+  `.lua` (stylua) are rewritten; `.md` is left unchanged. `.js` is formatted too, but the very first save after a cold
+  `prettierd` start can exceed the 500 ms `timeout_ms` and silently skip formatting (pre-existing; raise `timeout_ms` if it bothers you).
+- Revert: `git revert <sha>`.
+
 ## Deliberately not changed
 
 _Filled in at the final step._
