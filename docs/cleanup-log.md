@@ -197,6 +197,16 @@ Plugins install into `~/.local/share/nvim-thevinsi`, so the other config is unto
   after (`ts=4` / `ts=2` for lua / `ts=4`). `<leader>sf` and `<leader>X` are still mapped.
 - Revert: `git revert <sha>`.
 
+### Step 10 — relax `updatetime` from 50 to 250
+- Finding: #9.
+- Files: `lua/thevinsi/options.lua`, `docs/cleanup-log.md`.
+- Change: `vim.o.updatetime = 50` → `250` (Kickstart's default), comment explains why.
+- Why: `updatetime` is the idle time before `CursorHold` fires. `plugin/lsp-config.lua` uses `CursorHold`/`CursorHoldI` to send
+  `textDocument/documentHighlight` requests, so at 50 ms a request went out after nearly every brief pause while typing or
+  reading. 250 ms still feels immediate but sends far fewer requests. It also sets how often swap files are written.
+- Verify: `nvim --headless "+lua print(vim.o.updatetime)"` → `250`.
+- Revert: `git revert <sha>`; or set it back to `50` if you preferred the snappier highlight.
+
 ## Deliberately not changed
 
 _Filled in at the final step._

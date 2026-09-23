@@ -61,8 +61,10 @@ vim.o.smartcase = true
 -- Keep signcolumn on by default
 vim.o.signcolumn = "yes"
 
--- Decrease update time
-vim.o.updatetime = 50
+-- Decrease update time (idle ms before CursorHold fires and the swap file is written).
+--  Kept at 250 (the Kickstart default): CursorHold triggers LSP document highlight requests, so very low values
+--  (this was 50) send a request on nearly every pause.
+vim.o.updatetime = 250
 
 -- Decrease mapped sequence wait time
 vim.o.timeoutlen = 300
