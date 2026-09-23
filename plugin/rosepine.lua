@@ -4,6 +4,6 @@ vim.pack.add({
 		name = "rose-pine",
 	},
 })
-require("rose-pine").setup()
+require("rose-pine").setup({ disable_background = true })
 vim.cmd("colorscheme rose-pine")
 -- vim.cmd("colorscheme rose-pine-moon")
