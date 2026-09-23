@@ -84,6 +84,17 @@ Plugins install into `~/.local/share/nvim-thevinsi`, so the other config is unto
 - Verify: on the branch, `ls after` shows only `ftplugin`; `NVIM_APPNAME=nvim-thevinsi nvim --headless "+qa"` prints no errors.
 - Revert: nothing to revert in git (file was untracked); recreate from the block above if ever wanted (not recommended).
 
+### Step 2 — remove ineffective `after/ftplugin/all.lua`
+- Finding: #2.
+- Files: `after/ftplugin/all.lua` (deleted), `docs/cleanup-log.md`.
+- Change: deleted the file. Its content was `expandtab` + `tabstop/shiftwidth/softtabstop = 4`.
+- Why: ftplugin files are sourced by filetype name (`after/ftplugin/<filetype>.lua`); there is no filetype called
+  `all`, so it never ran. The same 4-space defaults are already set globally in root `init.lua` (consolidated in
+  step 9), and `guess-indent.nvim` overrides indentation per file anyway.
+- Verify: `git ls-files after` lists only `after/ftplugin/lua.lua`; `NVIM_APPNAME=nvim-thevinsi nvim --headless "+qa"`
+  prints no errors. No behaviour change expected.
+- Revert: `git revert <sha>`.
+
 ## Deliberately not changed
 
 _Filled in at the final step._
