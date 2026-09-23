@@ -24,7 +24,7 @@ vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>")
 vim.keymap.set("n", "<leader>ef", vim.cmd.Ex, { desc = "Explore Files" })
 
 -- Command executions for lua inside editor
-vim.keymap.set("n", "<space><space>x", "<cmd>source %<CR>")
+vim.keymap.set("n", "<leader>X", "<cmd>source %<CR>", { desc = "Source current file" })
 vim.keymap.set("n", "<space>x", ":.lua<CR>")
 vim.keymap.set("v", "<space>x", ":lua<CR>")
 

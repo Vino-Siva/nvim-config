@@ -63,6 +63,7 @@ Plugins install into `~/.local/share/nvim-thevinsi`, so the other config is unto
 
 | Keymap | Before | After | Step |
 |--------|--------|-------|------|
+| Source current file (normal) | `<space><space>x` | `<leader>X` (with description) | 4 |
 
 ## Steps
 
@@ -104,6 +105,18 @@ Plugins install into `~/.local/share/nvim-thevinsi`, so the other config is unto
 - Verify: `NVIM_APPNAME=nvim-thevinsi nvim --headless "+term" "+new" "+lua print(vim.wo.number)" "+qa!"`
   → before: `false` (bug), after: `true`. The terminal window itself still prints `false`.
 - Revert: `git revert <sha>`.
+
+### Step 4 — free `<leader><leader>` from a `timeoutlen` collision
+- Finding: #4.
+- Files: `lua/thevinsi/remap.lua`, `docs/cleanup-log.md`.
+- Change: normal-mode "source current file" moved from `<space><space>x` to `<leader>X`, and given a `desc`.
+  `<space>x` (run current line) and the visual `<space>x` (run selection) are unchanged.
+- Why: with `<leader>` = space, `<leader><leader>` (Telescope buffers, in `plugin/telescope.lua`) was a strict prefix of
+  `<space><space>x`. Neovim therefore waited `timeoutlen` (300 ms) after the second space to see if `x` followed, adding
+  a delay every time the buffer picker was opened. `<leader>X` is not a prefix of anything and nothing else maps it.
+- Verify: `NVIM_APPNAME=nvim-thevinsi nvim --headless` and list normal-mode maps starting with two spaces →
+  before: `"  "` (buffers) and `"  x"` (source); after: only `"  "` (buffers). `maparg('<leader>X','n')` is non-empty.
+- Revert: `git revert <sha>`; muscle memory note: the old key was `<space><space>x`.
 
 ## Deliberately not changed
 
