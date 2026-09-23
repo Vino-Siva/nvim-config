@@ -119,3 +119,6 @@ vim.keymap.set(
 	end,
 	{ desc = "Open Terminal inside neovim" }
 )
+
+-- Open Code Action for quick fix or fix diagnostics
+vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, { desc = "LSP Code Action" })
