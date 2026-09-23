@@ -299,6 +299,24 @@ Plugins install into `~/.local/share/nvim-thevinsi`, so the other config is unto
 - Alternative not taken: dropping LuaSnip and using blink's built-in snippet engine (`snippets.preset = "default"`).
 - Revert: `git revert <sha>` (the cloned plugin stays in `~/.local/share/nvim*/site/pack/core/opt`; `:lua vim.pack.del({"friendly-snippets"})` removes it).
 
+### Step 17 — track `nvim-pack-lock.json`
+- Finding: #16.
+- Files: `.gitignore` (deleted, its only line was `nvim-pack-lock.json`), `nvim-pack-lock.json` (new, 33 plugins), `docs/cleanup-log.md`.
+- Change: stopped ignoring the `vim.pack` lockfile and committed it. Before committing it I pruned six plugins from it that this
+  config never declares or references: `aether.nvim`, `kanagawa.nvim`, `lumon.nvim`, `matteblack.nvim`, `nightfox.nvim`,
+  `retro-82.nvim` (color-scheme plugins left over from earlier experiments / other branch state), using
+  `:lua vim.pack.del({...})` in the sandbox. `friendly-snippets` (step 16) is in it.
+- Why: the lockfile is what pins each plugin to an exact commit (`rev`), so a fresh clone installs the same versions instead of
+  whatever is newest that day. It contains only `src` and `rev` — no machine-specific paths. Earlier history shows it was
+  deliberately ignored (`Delete nvim-pack-lock.json`, `update: .gitignore`); the cost of tracking it is that every
+  `vim.pack.update()` now shows up as a diff (which is also the point: updates become reviewable and revertible).
+- Verify: `git ls-files nvim-pack-lock.json` lists it; it has 33 entries and none of the six themes; a fresh install from
+  it (see below) leaves it unchanged.
+- **Merge caution:** the `main` checkout has its own untracked `nvim-pack-lock.json` (39 entries, includes the six themes).
+  Git will refuse to merge over it. Before merging `cleanup` into `main`, move it aside
+  (`mv nvim-pack-lock.json nvim-pack-lock.json.bak`); after the merge, the tracked file is used.
+- Revert: `git revert <sha>` (restores the ignore rule and untracks the file; the local file stays on disk).
+
 ## Deliberately not changed
 
 _Filled in at the final step._
