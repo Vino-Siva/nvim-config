@@ -149,6 +149,21 @@ Plugins install into `~/.local/share/nvim-thevinsi`, so the other config is unto
 - Tip: to keep `git blame` useful, add this commit to `.git-blame-ignore-revs` and run
   `git config blame.ignoreRevsFile .git-blame-ignore-revs` (not done automatically).
 
+### Step 7 — install the formatters conform uses
+- Finding: #6.
+- Files: `plugin/lsp-config.lua` (`ensure_installed`), `docs/cleanup-log.md`.
+- Change: added `black`, `goimports`, `sqruff` (Mason package names confirmed in the local mason-registry) next to the
+  existing `prettierd`, `stylua`, `markdownlint-cli2`.
+- Why: `plugin/conform.lua` enables format-on-save for python, go, sql (and others) but only `stylua` and `prettierd` were
+  ever requested from Mason. `conform` is configured with `notify_on_error = false`, so a missing formatter fails silently.
+  `rustfmt` (rustup component) and `gofmt` (Go toolchain) are not Mason packages and were already on `PATH`.
+  `goimports` builds with Go and `black` installs with pip, so both need those toolchains (present on this machine).
+- Verify: in the sandbox, `conform.get_formatter_info(name).available` for `stylua black goimports gofmt rustfmt prettierd sqruff`
+  → before: `false` for stylua/black/goimports/prettierd/sqruff (gofmt/rustfmt `true`); after `:MasonToolsInstallSync`: all `true`.
+  Note: `mason-tool-installer` runs on `VimEnter`, so in normal use the tools appear after the first start; in a
+  headless test run `:MasonToolsInstallSync` explicitly.
+- Revert: `git revert <sha>` (installed binaries stay in Mason's directory; remove with `:MasonUninstall black goimports sqruff`).
+
 ## Deliberately not changed
 
 _Filled in at the final step._

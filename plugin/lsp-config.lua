@@ -136,6 +136,10 @@ do
     "prettierd",
     "stylua",
     "markdownlint-cli2",
+    -- Formatters referenced by plugin/conform.lua (rustfmt comes from rustup, gofmt from the Go toolchain)
+    "black",
+    "goimports",
+    "sqruff",
   })
 
   require("mason-tool-installer").setup({ ensure_installed = ensure_installed })
