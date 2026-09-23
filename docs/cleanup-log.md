@@ -133,6 +133,22 @@ Plugins install into `~/.local/share/nvim-thevinsi`, so the other config is unto
   setup, run `chmod +x` on that file (or `:MasonInstall stylua` in this config's sandbox / normal setup).
 - Revert: `git revert <sha>`.
 
+### Step 6 — run stylua over the repo
+- Finding: #5.
+- Files: 21 Lua files under `lua/` and `plugin/` (`git show --stat <sha>`), `docs/cleanup-log.md`.
+- Change: `stylua .` with the step-5 config. Formatting only: tabs → 2 spaces, plus stylua's normal quote/paren/wrapping rules.
+- Why: gets the whole repo to one style so later steps produce small diffs and future format-on-save runs are no-ops.
+- Verify:
+  - `stylua --check .` → clean.
+  - Logic is unchanged: for every tracked `*.lua` file, the stripped bytecode (`string.dump(loadfile(f), true)`) of the
+    pre-format version equals the post-format version (25/25 files identical), and a deliberately different pair is flagged.
+    Compare both versions **in the same process**: LuaJIT serialises table-constructor keys in a per-process hash order, so
+    dumps from two separate `nvim -l` runs of the same file can differ byte-for-byte.
+  - `NVIM_APPNAME=nvim-thevinsi nvim --headless "+qa"` prints no errors.
+- Revert: `git revert <sha>` (whole-repo formatting revert; later steps' diffs would then conflict, so revert in reverse order).
+- Tip: to keep `git blame` useful, add this commit to `.git-blame-ignore-revs` and run
+  `git config blame.ignoreRevsFile .git-blame-ignore-revs` (not done automatically).
+
 ## Deliberately not changed
 
 _Filled in at the final step._
