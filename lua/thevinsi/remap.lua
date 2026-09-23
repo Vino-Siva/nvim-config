@@ -102,8 +102,8 @@ vim.api.nvim_create_autocmd("TermOpen", {
 	desc = "Open terminal inside neovim",
 	group = vim.api.nvim_create_augroup("custom-term-open", { clear = true }),
 	callback = function()
-		vim.opt.number = false
-		vim.opt.relativenumber = false
+		vim.opt_local.number = false
+		vim.opt_local.relativenumber = false
 	end,
 })
 

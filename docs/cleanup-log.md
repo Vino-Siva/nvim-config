@@ -95,6 +95,16 @@ Plugins install into `~/.local/share/nvim-thevinsi`, so the other config is unto
   prints no errors. No behaviour change expected.
 - Revert: `git revert <sha>`.
 
+### Step 3 — scope terminal number settings with `opt_local`
+- Finding: #3.
+- Files: `lua/thevinsi/remap.lua` (`TermOpen` autocmd), `docs/cleanup-log.md`.
+- Change: `vim.opt.number/relativenumber = false` → `vim.opt_local.number/relativenumber = false`.
+- Why: `vim.opt` behaves like `:set`, which changes the global default as well as the current window. After opening a
+  terminal, every window created later inherited "no line numbers". `opt_local` (`:setlocal`) affects only the terminal window.
+- Verify: `NVIM_APPNAME=nvim-thevinsi nvim --headless "+term" "+new" "+lua print(vim.wo.number)" "+qa!"`
+  → before: `false` (bug), after: `true`. The terminal window itself still prints `false`.
+- Revert: `git revert <sha>`.
+
 ## Deliberately not changed
 
 _Filled in at the final step._
