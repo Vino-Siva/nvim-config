@@ -3,16 +3,20 @@
 Reference for the config cleanup started 2026-09-23. Every step is **one commit**, and each commit appends its own
 entry below, so `git revert <sha>` removes the code change and its log entry together.
 
-- Baseline: commits `62eddcd`, `1156bdd`, `1cf0e8e` (pre-existing work committed before the cleanup began).
+- Branch: `cleanup`, developed in a git worktree so the live `main` checkout is never modified while working.
+- Baseline: commits `62eddcd`, `1156bdd`, `1cf0e8e` (pre-existing work), `3683aa2` (this log's first version).
+  These were committed on `main` before the branch was created.
 - Neovim: 0.12.5. Plugin manager: built-in `vim.pack`.
 - Stylua: `~/.local/share/nvim/mason/bin/stylua` (not on `PATH`). Style: 2 spaces, width 120.
 
 ## Testing setup
 
-`~/.config/nvim` is a different config, so this repo is exercised through a separate app name:
+`~/.config/nvim` is a different config and the `main` checkout is in daily use, so the `cleanup` branch is exercised
+from its worktree through a separate app name:
 
 ```sh
-ln -s ~/Projects/nvim-config ~/.config/nvim-thevinsi   # one-time
+git worktree add .claude/worktrees/cleanup -b cleanup   # already done; from the main checkout
+ln -s ~/Projects/nvim-config/.claude/worktrees/cleanup ~/.config/nvim-thevinsi   # one-time
 NVIM_APPNAME=nvim-thevinsi nvim                         # run this config
 NVIM_APPNAME=nvim-thevinsi nvim --headless "+qa"        # smoke test: should print no errors
 ```
@@ -63,6 +67,22 @@ Plugins install into `~/.local/share/nvim-thevinsi`, so the other config is unto
 ## Steps
 
 <!-- Step entries are appended below, one per commit. -->
+
+### Step 1 — document removal of dead `after/plugins/vim-be-good.lua`
+- Finding: #1.
+- Files: `docs/cleanup-log.md` only. `after/plugins/vim-be-good.lua` is untracked, so it does not exist on this branch.
+- Change: none in code. **Manual action after merging into `main`:** delete the leftover untracked directory from the
+  main checkout (`rm -r after/plugins`); it was left in place on purpose because `main` is in use.
+- Why: Neovim only sources `after/plugin/` (singular), so it never ran. Had it run, `require("ThePrimeagen/vim-be-good")`
+  would have errored (vim-be-good is a Vimscript plugin with no Lua module or `setup()`), and `vim.pack.add` there duplicated
+  the install already done in `lua/thevinsi/plugins/vim-be-good.lua`.
+- Deleted content, for reference:
+  ```lua
+  vim.pack.add("https://github.com/ThePrimeagen/vim-be-good.git")
+  require("ThePrimeagen/vim-be-good").setup({})
+  ```
+- Verify: on the branch, `ls after` shows only `ftplugin`; `NVIM_APPNAME=nvim-thevinsi nvim --headless "+qa"` prints no errors.
+- Revert: nothing to revert in git (file was untracked); recreate from the block above if ever wanted (not recommended).
 
 ## Deliberately not changed
 
