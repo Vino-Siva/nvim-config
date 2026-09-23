@@ -182,6 +182,21 @@ Plugins install into `~/.local/share/nvim-thevinsi`, so the other config is unto
   `prettierd` start can exceed the 500 ms `timeout_ms` and silently skip formatting (pre-existing; raise `timeout_ms` if it bothers you).
 - Revert: `git revert <sha>`.
 
+### Step 9 — set leader and indent options in one place
+- Finding: #8.
+- Files: `init.lua`, `lua/thevinsi/options.lua`, `lua/thevinsi/remap.lua`, `docs/cleanup-log.md`.
+- Change:
+  - Leader/localleader were set in `init.lua`, `options.lua` and `remap.lua`; now only in `options.lua`.
+  - `guicursor`, `expandtab`, `tabstop`, `shiftwidth`, `softtabstop`, `smartindent` moved from `init.lua` into `options.lua`
+    (values unchanged, commented).
+  - Root `init.lua` is now just `require("thevinsi")`.
+- Why: one source of truth per setting. Ordering is preserved: `lua/thevinsi/init.lua` requires `options` first (leader is
+  set before `remap`, `pack`, and all `plugin/*` files, which Neovim sources after `init.lua`).
+- Verify (sandbox, headless): effective `leader`, `localleader`, `guicursor`, `expandtab`, `tabstop`, `shiftwidth`,
+  `softtabstop`, `smartindent` for a no-filetype buffer, a `lua` buffer and a `python` buffer are identical before and
+  after (`ts=4` / `ts=2` for lua / `ts=4`). `<leader>sf` and `<leader>X` are still mapped.
+- Revert: `git revert <sha>`.
+
 ## Deliberately not changed
 
 _Filled in at the final step._

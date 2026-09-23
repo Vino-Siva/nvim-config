@@ -1,9 +1,10 @@
 -- Enable faster startup by caching compiled Lua modules
 vim.loader.enable()
 
--- Set <space> as the leader key
+-- Set <space> as the leader key. This is the only place it is set.
 -- See `:help mapleader`
---  NOTE: Must happen before plugins are loaded (otherwise wrong leader will be used)
+--  NOTE: Must happen before mappings and plugins are loaded (otherwise wrong leader will be used).
+--  lua/thevinsi/init.lua requires this file first, before remap and every plugin/ file.
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 
@@ -14,6 +15,16 @@ vim.g.have_nerd_font = false
 --  See `:help vim.o`
 -- NOTE: You can change these options as you wish!
 --  For more options, you can see `:help option-list`
+
+-- Block cursor in every mode (an empty 'guicursor' disables cursor shape changes)
+vim.opt.guicursor = ""
+
+-- Default indentation (guess-indent.nvim adjusts it per file, after/ftplugin/lua.lua sets 2 spaces for Lua)
+vim.opt.expandtab = true
+vim.opt.tabstop = 4
+vim.opt.shiftwidth = 4
+vim.opt.softtabstop = 4
+vim.opt.smartindent = true
 
 -- Make line numbers default
 vim.o.number = true
