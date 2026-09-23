@@ -64,6 +64,9 @@ Plugins install into `~/.local/share/nvim-thevinsi`, so the other config is unto
 | Keymap | Before | After | Step |
 |--------|--------|-------|------|
 | Source current file (normal) | `<space><space>x` | `<leader>X` (with description) | 4 |
+| `grd` (buffer-local, LSP attached) | defined twice (lsp-config + telescope; telescope won) | defined once, in telescope (same behaviour) | 14 |
+| Yank to system clipboard (normal/visual) | `<leader>y` → `"+y` | removed; use plain `y` (`clipboard=unnamedplus`) | 15 |
+| Yank to end of line to clipboard (normal) | `<leader>Y` → `"+Y` | removed; use plain `Y` | 15 |
 
 ## Steps
 
@@ -266,6 +269,19 @@ Plugins install into `~/.local/share/nvim-thevinsi`, so the other config is unto
   (the Telescope mapping; the removed one was `LSP: [G]oto [d]efinition`) both before and after.
 - Side finding, no change needed: a second client `stylua --lsp` attaches to Lua buffers. That is the `stylua = {}` entry
   in the `servers` table: stylua 2.x has an LSP mode and nvim-lspconfig ships a config for it.
+- Revert: `git revert <sha>`.
+
+### Step 15 — drop redundant `<leader>y` / `<leader>Y`
+- Finding: #14.
+- Files: `lua/thevinsi/remap.lua`, `docs/cleanup-log.md`.
+- Change: removed `<leader>y` (normal + visual, `"+y`) and `<leader>Y` (`"+Y`), with a comment explaining why. `<leader>p`
+  (`"_dP`, paste without overwriting the register) and `<leader>d` (`"_d`, delete without yanking) are kept.
+- Why: `options.lua` sets `clipboard = "unnamedplus"`, so every plain `y`/`Y` already writes to the system clipboard; these
+  maps did exactly the same thing. (`d` also writes to the clipboard under `unnamedplus`, which is why `<leader>d` is still useful.)
+- Verify (sandbox, headless, waiting for the async provider): before and after, a plain `yy` puts the line in the `+` register
+  (and `wl-paste` returns it). `maparg('<leader>y')`/`('<leader>Y')` → mapped before, unmapped after; `<leader>d`/`<leader>p` still mapped.
+- Muscle-memory note: `<Space>y` now moves right one character and starts a plain `y` operator instead of yanking to the clipboard;
+  use `y` directly. If you would rather keep the old habit, `git revert <sha>` restores it.
 - Revert: `git revert <sha>`.
 
 ## Deliberately not changed

@@ -6,10 +6,9 @@ vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv")
 vim.keymap.set("n", "J", "mzJ`z")
 
 -- greatest remap ever - thePrimeagen
+-- (`<leader>y` / `<leader>Y` are not needed: clipboard=unnamedplus in options.lua already sends every yank to the
+--  system clipboard. `<leader>p` / `<leader>d` are still useful, they avoid overwriting the clipboard.)
 vim.keymap.set("x", "<leader>p", '"_dP')
-vim.keymap.set("n", "<leader>y", '"+y')
-vim.keymap.set("v", "<leader>y", '"+y')
-vim.keymap.set("n", "<leader>Y", '"+Y')
 
 vim.keymap.set("n", "<leader>d", '"_d')
 vim.keymap.set("v", "<leader>d", '"_d')
