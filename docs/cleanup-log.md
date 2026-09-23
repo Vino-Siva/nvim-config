@@ -15,8 +15,8 @@ entry below, so `git revert <sha>` removes the code change and its log entry tog
 from its worktree through a separate app name:
 
 ```sh
-git worktree add .claude/worktrees/cleanup -b cleanup   # already done; from the main checkout
-ln -s ~/Projects/nvim-config/.claude/worktrees/cleanup ~/.config/nvim-thevinsi   # one-time
+git worktree add <dir> -b cleanup                        # already done; <dir> is a folder inside the main checkout
+ln -s <dir> ~/.config/nvim-thevinsi                      # one-time; `git worktree list` shows <dir>
 NVIM_APPNAME=nvim-thevinsi nvim                         # run this config
 NVIM_APPNAME=nvim-thevinsi nvim --headless "+qa"        # smoke test: should print no errors
 ```
@@ -329,6 +329,93 @@ Plugins install into `~/.local/share/nvim-thevinsi`, so the other config is unto
   list matches the `servers` table; the key table matches the live mappings.
 - Revert: `git revert <sha>`.
 
+### Step 19 — finalize this log
+- Files: `docs/cleanup-log.md`.
+- Change: filled in the sections below (commit index, final verification, merge instructions, deliberately-not-changed list,
+  sandbox cleanup). Docs only.
+- Revert: `git revert <sha>`.
+
+## Commit index
+
+| Step | Commit | Subject |
+|------|--------|---------|
+| 0a | `62eddcd` `1156bdd` `1cf0e8e` | pre-existing WIP, committed on `main` before branching |
+| 0b | `3683aa2` | docs: add cleanup log (on `main`, before branching) |
+| 1 | `ebe00c5` | docs: log removal of dead after/plugins/vim-be-good.lua |
+| 2 | `029461c` | fix: remove ineffective after/ftplugin/all.lua |
+| 3 | `ad181be` | fix: scope terminal number settings with opt_local |
+| 4 | `ef37eae` | fix: free <leader><leader> from timeoutlen collision |
+| 5 | `04912e2` | chore: add stylua.toml (2 spaces, width 120) |
+| 6 | `a0a3efe` | style: run stylua over repo |
+| 7 | `eec0189` | fix: install formatters used by conform via mason |
+| 8 | `5387895` | refactor: derive conform format_on_save from formatters_by_ft |
+| 9 | `be22b3e` | refactor: set leader and indent options in one place |
+| 10 | `54ed77e` | fix: relax updatetime from 50 to 250 |
+| 11 | `8a7da3c` | chore: enable nerd font support |
+| 12 | `504e20d` | refactor: move gitsigns and vim-be-good into plugin/ |
+| 13 | `e3ce4b5` | chore: remove stale which-key groups |
+| 14 | `0e41d8d` | fix: remove duplicate grd mapping from lsp-config |
+| 15 | `fadb6e1` | chore: drop redundant <leader>y and <leader>Y maps |
+| 16 | `7905792` | feat: enable friendly-snippets for LuaSnip |
+| 17 | `8c178db` | chore: track nvim-pack-lock.json |
+| 18 | `ad95c48` | docs: expand README |
+| 19 | (this commit) | docs: finalize cleanup log |
+
+List them any time with `git log --oneline 2a4e475..cleanup` (`2a4e475` is the last commit before the cleanup).
+
+## Final verification (branch `cleanup`, sandbox `NVIM_APPNAME=nvim-thevinsi`)
+
+- `stylua --check .` → clean.
+- Fresh headless start prints no errors.
+- A brand-new install from the tracked lockfile (second sandbox) installed 33 plugins, all at their locked revision, and left
+  `nvim-pack-lock.json` unchanged.
+- Every formatter in `formatters_by_ft` is available except the `prettier` fallback (`prettierd` comes first in the chain and
+  is installed, so this has no effect).
+- Each step's own check is recorded in its entry above. Not verified: interactive UI behaviour (blink.cmp menu, which-key
+  popup rendering, icons in the statusline); the checks were headless.
+
+## Merging into `main`
+
+`main` is the config in daily use, so nothing was changed there except the three baseline commits and the log commit (`3683aa2`).
+Do this from the main checkout when you are ready:
+
+```sh
+cd ~/Projects/nvim-config
+git status                                   # expect only the untracked leftovers below
+rm -r after/plugins                          # leftover dead dir from step 1 (untracked)
+mv nvim-pack-lock.json nvim-pack-lock.json.bak   # step 17: git refuses to overwrite an untracked lockfile
+git merge cleanup                            # fast-forward if main has not moved since 3683aa2
+nvim                                         # first start: installs friendly-snippets, mason tools (black, goimports, sqruff)
+```
+
+Afterwards (optional): `git worktree remove <dir> && git branch -d cleanup` (`git worktree list` shows `<dir>`), and remove
+the worktree folder's line that was added to `.git/info/exclude`. The old themes that were in your previous lockfile stay installed on disk
+(inactive); remove them with `:lua vim.pack.del({"aether.nvim","kanagawa.nvim","lumon.nvim","matteblack.nvim","nightfox.nvim","retro-82.nvim"})`.
+Keymap changes to relearn are listed in the table near the top (`<leader>X`, no `<leader>y`/`<leader>Y`).
+
+## Sandbox cleanup
+
+The testing sandboxes used during the cleanup can be removed once you no longer need them:
+
+```sh
+rm ~/.config/nvim-thevinsi ~/.config/nvim-thevinsi-fresh                  # symlinks to the worktree
+rm -r ~/.local/share/nvim-thevinsi* ~/.local/state/nvim-thevinsi* ~/.cache/nvim-thevinsi*
+```
+
 ## Deliberately not changed
 
-_Filled in at the final step._
+Reviewed, judged not worth changing now (or a matter of taste). Revisit later if wanted.
+
+| Item | Why left alone |
+|------|----------------|
+| `undodir = ~/.vim/undodir` in `options.lua` | Removing it would orphan the existing undo history there (124 files, 3.9 MB at the time of writing); Neovim's default undo dir would start empty. |
+| `<leader>ca` (global) overlapping `gra` (buffer-local, LSP) | You added `<leader>ca` on purpose. Downside: it errors on buffers without an LSP client. |
+| DAP stack loads eagerly (`plugin/debug.lua`: nvim-dap, dap-ui, nio, dap-go, mason-nvim-dap) and is Go/delve-only | Startup cost is modest and it is your debugging setup; lazy-load or trim when you know which languages you debug. |
+| `typescript-tools.nvim` instead of `ts_ls`/`vtsls` | Works; switching is a preference and a behaviour change. |
+| `lua_ls` `workspace.library = vim.api.nvim_get_runtime_file("", true)` | Known-slow (the comment in the file says so) but gives full completion for your own config. `lazydev.nvim` is the usual replacement. |
+| `kickstart-lsp-detach` augroup created with `clear = true` inside each `LspAttach` | Upstream Kickstart quirk: each new attach clears earlier buffers' detach handlers. Low impact. |
+| `nvim-web-devicons` explicitly added in `neo-tree.lua` | Redundant now that mini's mock is used (step 11) but harmless. |
+| Format-on-save only for filetypes in `formatters_by_ft` (none for json/css/html/yaml/markdown) and `timeout_ms = 500` | A choice, not a bug; `<leader>f` formats any buffer. Cold `prettierd` start can exceed 500 ms once. |
+| `prettier` (the fallback after `prettierd`) is not in Mason `ensure_installed` | Not needed while `prettierd` is installed. |
+| Mason's `stylua` in `~/.local/share/nvim/mason/` (the LazyVim config's data dir) lost its executable bit | Outside this repo; `chmod +x` that file if the LazyVim setup's stylua reports "not executable". |
+| Mixed `vim.o` / `vim.opt` usage, literal `<space>x` vs `<leader>`, `kickstart-*` augroup names | Cosmetic. |
