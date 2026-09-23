@@ -207,6 +207,22 @@ Plugins install into `~/.local/share/nvim-thevinsi`, so the other config is unto
 - Verify: `nvim --headless "+lua print(vim.o.updatetime)"` → `250`.
 - Revert: `git revert <sha>`; or set it back to `50` if you preferred the snappier highlight.
 
+### Step 11 — enable the Nerd Font flag
+- Finding: #10.
+- Files: `lua/thevinsi/options.lua`, `docs/cleanup-log.md`.
+- Change: `vim.g.have_nerd_font = false` → `true`.
+- Why: neo-tree was given `nvim-web-devicons` (needs a Nerd Font) while the flag said no font was available, so mini.nvim
+  (`mini.icons`, statusline icons) and which-key kept plain text. JetBrainsMono Nerd Font is installed and configured in the
+  terminal configs, so icons render.
+- What changes visually: mini.statusline shows icons, which-key shows mapping icons, and `mini.icons` is set up and mocks
+  `nvim-web-devicons` (`MiniIcons.mock_nvim_web_devicons()`), which Telescope/neo-tree then use.
+- Note: `plugin/mini.lua` is sourced before `plugin/neo-tree.lua`, so neo-tree gets the mini mock rather than the real
+  `nvim-web-devicons` it installs. That works (checked below); the explicit `nvim-web-devicons` entry in `neo-tree.lua`
+  is now redundant but harmless, and left alone.
+- Verify (sandbox): `vim.g.have_nerd_font` is `true`, `MiniIcons` is a table, `require("nvim-web-devicons").get_icon("x.lua", "lua")`
+  returns an icon, and `:Neotree show` opens a window without errors.
+- Revert: `git revert <sha>` (or open the config in a terminal without a Nerd Font → boxes/`?` glyphs are the symptom to look for).
+
 ## Deliberately not changed
 
 _Filled in at the final step._
