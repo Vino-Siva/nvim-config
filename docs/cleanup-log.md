@@ -317,6 +317,18 @@ Plugins install into `~/.local/share/nvim-thevinsi`, so the other config is unto
   (`mv nvim-pack-lock.json nvim-pack-lock.json.bak`); after the merge, the tracked file is used.
 - Revert: `git revert <sha>` (restores the ignore rule and untracks the file; the local file stays on disk).
 
+### Step 18 — expand the README
+- Finding: #17.
+- Files: `README.md`, `docs/cleanup-log.md`.
+- Change: replaced the one-line README with install / `NVIM_APPNAME` instructions, a prerequisites table, the repo layout,
+  the load order, a plugin overview, a key-mapping cheat sheet, maintenance commands, and a link to this log.
+- Why: the repo had no description of how it is structured or what it needs (`tree-sitter-cli`, a C compiler, `ripgrep`,
+  `make`, a clipboard tool, a Nerd Font, `go`/`node`/`python3` for some Mason packages).
+- Verify: prerequisites were checked against `nvim-treesitter`'s own README (Neovim ≥ 0.12, `tar`, `curl`, `tree-sitter-cli`
+  ≥ 0.26.1, C compiler) and the tools present on this machine; every path in the layout block exists in the tree; the LSP server
+  list matches the `servers` table; the key table matches the live mappings.
+- Revert: `git revert <sha>`.
+
 ## Deliberately not changed
 
 _Filled in at the final step._
