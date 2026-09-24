@@ -16,7 +16,26 @@ vim.keymap.set("v", "<leader>d", '"_d')
 -- Clear highlights on search when pressing <Esc> in normal mode
 --  See `:help hlsearch`
 vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>")
-vim.keymap.set("n", "<leader>ef", vim.cmd.Ex, { desc = "Explore Files" })
+vim.keymap.set("n", "<leader>ef", vim.cmd.Ex, { desc = "[E]xplore current [f]ile's directory" })
+
+-- Open netrw at a given directory, escaping it so paths with spaces/special characters work.
+local function explore_at(dir)
+  vim.cmd.Explore(vim.fn.fnameescape(dir))
+end
+
+vim.keymap.set("n", "<leader>er", function()
+  -- Nearest ancestor directory (from the current buffer) containing `.git`, so this works no matter which
+  -- subdirectory of a project you are currently editing in. Falls back to the current working directory.
+  explore_at(vim.fs.root(0, ".git") or vim.fn.getcwd())
+end, { desc = "[E]xplore project [r]oot" })
+
+vim.keymap.set("n", "<leader>en", function()
+  explore_at(vim.fn.stdpath("config"))
+end, { desc = "[E]xplore [n]eovim config" })
+
+vim.keymap.set("n", "<leader>ep", function()
+  explore_at(vim.fn.expand("~/Projects"))
+end, { desc = "[E]xplore [p]rojects folder" })
 
 -- Command executions for lua inside editor
 vim.keymap.set("n", "<leader>X", "<cmd>source %<CR>", { desc = "Source current file" })
