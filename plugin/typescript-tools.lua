@@ -3,11 +3,10 @@ local function gh(repo)
 end
 
 do
-  vim.pack.add({
-    { src = gh("nvim-lua/plenary.nvim") },
-    { src = gh("neovim/nvim-lspconfig") },
-    { src = gh("pmizio/typescript-tools.nvim") },
-  })
+  -- plenary.nvim and nvim-lspconfig are dependencies of this plugin, but they are already added earlier
+  -- (alphabetically) by neo-tree.lua and lsp-config.lua respectively; re-adding them here would be a no-op
+  -- (see :help vim.pack.add()) and just duplicate the spec.
+  vim.pack.add({ gh("pmizio/typescript-tools.nvim") })
 
   require("typescript-tools").setup({})
 end
