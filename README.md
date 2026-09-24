@@ -58,7 +58,7 @@ calls `vim.pack.add(...)` and configures its plugin. Keep each file self-contain
 | Colors / UI | `rose-pine` (transparent background), `mini.nvim` (statusline, icons, `ai`, `surround`), `which-key`, `indent-blankline`, `todo-comments`, `fidget` |
 | Navigation | `telescope` (+ `fzf-native`, `ui-select`), `neo-tree` (`\`) |
 | LSP / completion | `nvim-lspconfig`, `mason` (+ `mason-lspconfig`, `mason-tool-installer`), `blink.cmp`, `LuaSnip` + `friendly-snippets`, `typescript-tools` |
-| Syntax | `nvim-treesitter` (main branch, parsers auto-installed on first use) |
+| Syntax | `nvim-treesitter` (main branch, parsers auto-installed on first use), `nvim-treesitter-context` (pins the current function/class signature at the top of the window) |
 | Format / lint | `conform` (format on save for filetypes listed in `formatters_by_ft`), `nvim-lint` (markdown) |
 | Git | `gitsigns` |
 | Debugging | `nvim-dap`, `nvim-dap-ui`, `nvim-dap-go` |
@@ -83,6 +83,7 @@ Press `<Space>` and wait: which-key shows what is available. Highlights:
 | `<leader>X` / `<space>x` | Source current file / run current line or selection as Lua |
 | `<leader>d` (normal, visual) / `<leader>p` (visual) | Delete / paste over a selection without overwriting the clipboard (black-hole register) |
 | `<leader>h…` / `]c` `[c` | Git hunks (gitsigns) |
+| `[x` / `<leader>tc` | Jump to the pinned function signature / toggle it (treesitter-context) |
 | `<F5>` `<F1>` `<F2>` `<F3>` `<leader>b` | Debugger: continue, step into/over/out, breakpoint |
 | `<leader>ot` | Open a terminal at the bottom (`<Esc><Esc>` leaves terminal mode) |
 | `<C-h/j/k/l>` | Move between windows |
