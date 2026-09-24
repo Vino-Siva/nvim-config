@@ -84,6 +84,7 @@ Press `<Space>` and wait: which-key shows what is available. Highlights:
 | `<leader>d` (normal, visual) / `<leader>p` (visual) | Delete / paste over a selection without overwriting the clipboard (black-hole register) |
 | `<leader>h…` / `]c` `[c` | Git hunks (gitsigns) |
 | `[x` / `<leader>tc` | Jump to the pinned function signature / toggle it (treesitter-context) |
+| `<leader>tu` | Toggle the undo tree (Neovim's built-in `nvim.undotree`; jump between undo branches) |
 | `<F5>` `<F1>` `<F2>` `<F3>` `<leader>b` | Debugger: continue, step into/over/out, breakpoint |
 | `<leader>ot` | Open a terminal at the bottom (`<Esc><Esc>` leaves terminal mode) |
 | `<C-h/j/k/l>` | Move between windows |
