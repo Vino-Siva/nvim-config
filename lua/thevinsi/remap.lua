@@ -112,8 +112,8 @@ vim.keymap.set(
     vim.cmd.wincmd("J")
     vim.api.nvim_win_set_height(0, 10)
   end,
-  { desc = "Open Terminal inside neovim" }
+  { desc = "[O]pen [T]erminal inside neovim" }
 )
 
 -- Open Code Action for quick fix or fix diagnostics
-vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, { desc = "LSP Code Action" })
+vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, { desc = "LSP [C]ode [A]ction" })
